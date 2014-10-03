@@ -13,7 +13,7 @@ disallowed_list_re = re.compile(r"(google.com|facebook.com|twitter.com|instagram
 discovered_urls = []
 
 
-MAX_DEPTH = 2
+MAX_DEPTH = 1
 WORD_RE = re.compile(r"[\w']+")
 
 all_links_table = "all_links"
@@ -121,7 +121,7 @@ class SEOCrawler(MRJob):
         return None
 
     def mapper_init(self):
-        seed_url = "http://www.ratesupermarket.ca/"
+        seed_url = "http://www.points.com/"
         self.db = _mysql.connect(host="localhost", user="root", passwd="letmein", db="seo_crawler")
         self.db.query("delete from to_be_crawled_links")
 
@@ -139,6 +139,7 @@ class SEOCrawler(MRJob):
         if valid_link_re.match(url):
             current_node = {'depth': int(depth), 'visited': False, 'url': url, 'child_nodes': defaultdict(dict)}
             if not current_node['visited'] and current_node['depth'] <= MAX_DEPTH:
+                #TODO implement threading here and monitor thread to make sure as speed deteriorts don't thread.
                 traverse_for_links(current_node)
 
 if __name__ == '__main__':

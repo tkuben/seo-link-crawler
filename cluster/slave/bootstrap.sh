@@ -72,6 +72,12 @@ EOF
 
 
 last_node_number=`tail -1 /home/vagrant/slaves | awk -F'-' '{print $3}'`
+if [ -z "$last_node_number" ]
+then
+    last_node_number=10
+fi
+
+
 echo "Last Node Number: ${last_node_number}"
 current_node_number=$((last_node_number+1))
 ip="192.168.30.${current_node_number}"
