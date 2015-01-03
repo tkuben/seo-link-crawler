@@ -9,7 +9,7 @@ class DB(object):
         self.db_connection = self._init_db_connection()
 
     def _init_db_connection(self):
-        return mysql.connect(host="hadoop-master", user="root", passwd="letmein", db=configuration.database_name)
+        return mysql.connect(host="162.244.12.150", user="tkuben", passwd="letmein", db=configuration.database_name)
 
     def get_db_connection(self):
         return self.db_connection

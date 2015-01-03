@@ -1,3 +1,4 @@
+import os
 import threading
 import re
 
@@ -69,4 +70,27 @@ class SEOCrawler(MRJob):
 
 
 if __name__ == '__main__':
-    SEOCrawler.run()
+    cwd = os.getcwd()
+    db_obj = db_adapter.DB()
+    db_conn = db_obj.get_db_connection()
+    cur = db_conn.cursor()   
+    cur.execute("select * from {} where crawled=0 limit 1".format(configuration.queue_table))
+    row = cur.fetchone()
+    while row:
+        seed_url = row[1]
+        parse_url = configuration.valid_link_re.match(seed_url)
+        file_name = re.sub('[^0-9a-zA-Z\-]+', '', seed_url)
+        if parse_url:
+            file_name = parse_url.groups()[1]
+        cur.execute("update {} set crawled=1 where url='{}'".format(configuration.queue_table, seed_url))
+        cur.execute("delete from {}".format(configuration.to_be_crawled_table))
+        cur.execute("delete from {}".format(configuration.all_links_table))
+        cur.execute("delete from {}".format(configuration.non_working_urls_table))
+        cur.execute("insert into {} values ('{}',0)".format(configuration.to_be_crawled_table, seed_url)) 
+        db_conn.commit()
+        SEOCrawler.run()
+        print "****----------------Outputting results for {}".format(seed_url)
+        cur.execute("SELECT * INTO OUTFILE '{}/crawl_data/{}_non_working.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\n' FROM {}".format(cwd, file_name,configuration.non_working_urls_table))
+        cur.execute("SELECT * INTO OUTFILE '{}/crawl_data/{}_all_links.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\n' FROM {}".format(cwd, file_name,configuration.all_links_table))
+        cur.execute("select * from {} where crawled=0 limit 1".format(configuration.queue_table))
+        row = cur.fetchone()
