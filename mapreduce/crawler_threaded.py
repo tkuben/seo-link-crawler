@@ -71,14 +71,15 @@ class SEOCrawler(MRJob):
 
 if __name__ == '__main__':
     import time
-    cwd = os.getcwd()
-    #SEOCrawler.run()
-    #file_name = 'resumed_{}'.formate(time.time())
-    #cur.execute("SELECT distinct url,error INTO OUTFILE '{}/crawl_data/{}_non_working.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\n' FROM {}".format(cwd, file_name,configuration.non_working_urls_table))
-    #cur.execute("SELECT * INTO OUTFILE '{}/crawl_data/{}_all_links.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\n' FROM {}".format(cwd, file_name,configuration.all_links_table))
     db_obj = db_adapter.DB()
     db_conn = db_obj.get_db_connection()
     cur = db_conn.cursor()   
+    
+    cwd = os.getcwd()
+    SEOCrawler.run()
+    file_name = 'resumed_{}'.format(time.time())
+    cur.execute("SELECT distinct url,error INTO OUTFILE '{}/crawl_data/{}_non_working.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\n' FROM {}".format(cwd, file_name,configuration.non_working_urls_table))
+    cur.execute("SELECT * INTO OUTFILE '{}/crawl_data/{}_all_links.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\n' FROM {}".format(cwd, file_name,configuration.all_links_table))
     cur.execute("select * from {} where crawled=0 limit 1".format(configuration.queue_table))
     row = cur.fetchone()
     while row:
