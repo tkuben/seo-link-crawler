@@ -29,7 +29,7 @@ sudo sh -c 'echo "192.168.30.10     hadoop-master" >> /etc/hosts'
 
 su - $USER << EOF
     echo "Checking out Repository"
-    svn co --non-interactive https://supergroupdeals.svn.cvsdude.com/supergroupdeals/other_projects/seo_link_crawler/trunk --username 'savitha' --password 'lalaFungi2214' crawler
+    git clone https://github.com/tkuben/seo-link-crawler.git crawler
     chmod 600 ~/crawler/cluster/master/id_dsa
 
     echo "Setting up passwordless login"

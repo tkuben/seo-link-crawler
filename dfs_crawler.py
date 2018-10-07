@@ -44,7 +44,7 @@ class MyHTMLParser(HTMLParser):
 
                 #if the netloc of the link is one of the disallowed, ignore it.
                 if disallowed_list_re.match(parsed_url.netloc):
-                    continue
+                    return
                 
                 if not self.current_node['child_nodes']:
                     self.current_node['child_nodes'] = defaultdict(dict)
